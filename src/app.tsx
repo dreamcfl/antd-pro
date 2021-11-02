@@ -3,7 +3,6 @@ import { PageLoading } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 const loginPath = '/user/login'; 
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
@@ -14,19 +13,11 @@ export const initialStateConfig = {
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
-export async function getInitialState(): Promise<{
-  settings?: Partial<LayoutSettings>;
-  currentUser?: API.CurrentUser;
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
-}> {
+export async function getInitialState() {
   const fetchUserInfo = async () => {
-    try {
-      const msg = await queryCurrentUser();
-      return msg.data;
-    } catch (error) {
-      history.push(loginPath);
-    }
-    return undefined;
+    let userInfo = localStorage.getItem('userInfo_chart_Obj')
+    console.log(userInfo)
+    return userInfo || undefined;
   };
   // 如果是登录页面，不执行
   if (history.location.pathname !== loginPath) {
@@ -49,12 +40,13 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {
-      content: initialState?.currentUser?.name,
+      content: '',
     },
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
+      let userInfo = localStorage.getItem('userInfo_chart_Obj')
+      if (!userInfo && location.pathname !== loginPath) {
         history.push(loginPath);
       }
     }, 
