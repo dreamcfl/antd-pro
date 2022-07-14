@@ -193,7 +193,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-function fasle<T>(fasle: any): [any, any] {
-  throw new Error('Function not implemented.');
-}
 
